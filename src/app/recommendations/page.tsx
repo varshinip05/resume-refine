@@ -3,12 +3,10 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Briefcase, MapPin, DollarSign, CheckCircle } from 'lucide-react';
 
 const mockJobs = [
@@ -113,9 +111,6 @@ export default function RecommendationsPage() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button className="w-full">Apply Now</Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
