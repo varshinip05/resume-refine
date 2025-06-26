@@ -50,9 +50,22 @@ export async function signup(prevState: any, formData: FormData) {
     });
   } catch (e) {
     console.error(e);
-    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
+    let detailedMessage = 'An unknown error occurred';
+    if (e instanceof Error) {
+      detailedMessage = e.message;
+      if (e.message.includes('querySrv ENOTFOUND')) {
+        detailedMessage +=
+          '\n\nHint: The database hostname seems incorrect. Please double-check your MONGODB_URI in the .env file.';
+      } else if (e.message.includes('Authentication failed')) {
+        detailedMessage +=
+          '\n\nHint: The database username or password in your MONGODB_URI is likely incorrect.';
+      } else if (e.message.toLowerCase().includes('timeout')) {
+        detailedMessage +=
+          '\n\nHint: The connection timed out. This is often caused by an IP address not being whitelisted in MongoDB Atlas Network Access settings. Please ensure your current IP is added.';
+      }
+    }
     return {
-      message: `Database error: ${errorMessage}. Please check your connection string and try again.`,
+      message: `Database error: ${detailedMessage}. Please check your connection string and IP whitelist.`,
     };
   }
 
@@ -96,9 +109,22 @@ export async function login(prevState: any, formData: FormData) {
 
   } catch (e) {
     console.error(e);
-    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
+    let detailedMessage = 'An unknown error occurred';
+    if (e instanceof Error) {
+      detailedMessage = e.message;
+      if (e.message.includes('querySrv ENOTFOUND')) {
+        detailedMessage +=
+          '\n\nHint: The database hostname seems incorrect. Please double-check your MONGODB_URI in the .env file.';
+      } else if (e.message.includes('Authentication failed')) {
+        detailedMessage +=
+          '\n\nHint: The database username or password in your MONGODB_URI is likely incorrect.';
+      } else if (e.message.toLowerCase().includes('timeout')) {
+        detailedMessage +=
+          '\n\nHint: The connection timed out. This is often caused by an IP address not being whitelisted in MongoDB Atlas Network Access settings. Please ensure your current IP is added.';
+      }
+    }
     return {
-      message: `Database error: ${errorMessage}. Please check your connection string and try again.`,
+      message: `Database error: ${detailedMessage}. Please check your connection string and IP whitelist.`,
     };
   }
   
