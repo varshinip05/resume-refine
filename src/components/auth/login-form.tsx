@@ -1,86 +1,68 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { useFormState, useFormStatus } from 'react-dom';
+import { login } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
-});
+function LoginButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending} suppressHydrationWarning>
+      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      Log In
+    </Button>
+  );
+}
 
 export function LoginForm() {
+  const [state, formAction] = useFormState(login, null);
+  const { toast } = useToast();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  useEffect(() => {
+    if (state?.message) {
+      toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: state.message,
+      });
+    }
+  }, [state, toast]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    // Mock API call for demonstration purposes
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/dashboard');
-    }, 1500);
-  }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
+    <form action={formAction} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="email"
+          placeholder="john.doe@example.com"
+          required
+          suppressHydrationWarning
         />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email}</p>}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input 
+            id="password" 
+            name="password" 
+            type="password" 
+            placeholder="********" 
+            required 
+            suppressHydrationWarning
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Log In
-        </Button>
-      </form>
-    </Form>
+        {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password}</p>}
+      </div>
+      <LoginButton />
+    </form>
   );
 }

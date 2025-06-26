@@ -1,103 +1,72 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { useFormState, useFormStatus } from 'react-dom';
+import { signup } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters.' }),
-});
+function SignupButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending} suppressHydrationWarning>
+      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      Create Account
+    </Button>
+  );
+}
 
 export function SignUpForm() {
+  const [state, formAction] = useFormState(signup, null);
+  const { toast } = useToast();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    // Mock API call for demonstration purposes
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push('/dashboard');
-    }, 1500);
-  }
+  useEffect(() => {
+    if (state?.message) {
+      toast({
+        variant: 'destructive',
+        title: 'Signup Failed',
+        description: state.message,
+      });
+    }
+  }, [state, toast, router]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="John Doe" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
+    <form action={formAction} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="name">Name</Label>
+        <Input id="name" name="name" placeholder="John Doe" required suppressHydrationWarning />
+        {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name}</p>}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
           name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="email"
+          placeholder="john.doe@example.com"
+          required
+          suppressHydrationWarning
         />
-        <FormField
-          control={form.control}
+        {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email}</p>}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
           name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          type="password"
+          placeholder="********"
+          required
+          suppressHydrationWarning
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Account
-        </Button>
-      </form>
-    </Form>
+        {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password}</p>}
+      </div>
+      <SignupButton />
+    </form>
   );
 }
