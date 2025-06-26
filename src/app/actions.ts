@@ -91,6 +91,10 @@ export async function analyzeResumeAction(
     };
   } catch (e) {
     console.error(e);
-    return { error: 'An error occurred during analysis. Please try again.' };
+    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
+    if (errorMessage.includes('API key not valid')) {
+      return { error: 'Your Google API key is not valid. Please check your .env file and ensure it is correct.' };
+    }
+    return { error: `An error occurred during analysis: ${errorMessage}` };
   }
 }
