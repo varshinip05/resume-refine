@@ -50,8 +50,9 @@ export async function signup(prevState: any, formData: FormData) {
     });
   } catch (e) {
     console.error(e);
+    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
     return {
-      message: 'An error occurred during signup. Please try again.',
+      message: `Database error: ${errorMessage}. Please check your connection string and try again.`,
     };
   }
 
@@ -95,8 +96,9 @@ export async function login(prevState: any, formData: FormData) {
 
   } catch (e) {
     console.error(e);
+    const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
     return {
-      message: 'An error occurred during login. Please try again.',
+      message: `Database error: ${errorMessage}. Please check your connection string and try again.`,
     };
   }
   
