@@ -1,12 +1,12 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import { signup } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useActionState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +21,7 @@ function SignupButton() {
 }
 
 export function SignUpForm() {
-  const [state, formAction] = useFormState(signup, null);
+  const [state, formAction] = useActionState(signup, null);
   const { toast } = useToast();
   const router = useRouter();
 
