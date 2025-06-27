@@ -19,6 +19,8 @@ export function Header() {
   const pathname = usePathname();
 
   const handleLogout = () => {
+    // Clear user-specific data from storage
+    localStorage.removeItem('userSkills');
     // Mock logout behavior
     router.push('/login');
   };
