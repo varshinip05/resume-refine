@@ -2,6 +2,7 @@
 
 import { analyzeResume } from '@/ai/flows/resume-analyzer';
 import { resumeFeedbackGenerator } from '@/ai/flows/resume-feedback-generator';
+import { recommendJobs, type Job } from '@/ai/flows/job-recommender';
 import { z } from 'zod';
 
 const fileToDataUri = (file: File) => {
@@ -96,5 +97,36 @@ export async function analyzeResumeAction(
       return { error: 'Your Google API key is not valid. Please check your .env file and ensure it is correct.' };
     }
     return { error: `An error occurred during analysis: ${errorMessage}` };
+  }
+}
+
+export type JobRecommendationResult = {
+  jobs?: Job[];
+  error?: string;
+};
+
+export async function getJobRecommendationsAction(
+  skills: string[]
+): Promise<JobRecommendationResult> {
+  if (!skills || skills.length === 0) {
+    return { error: 'No skills provided to find recommendations.' };
+  }
+
+  try {
+    const result = await recommendJobs({ skills });
+    return { jobs: result.jobs };
+  } catch (e) {
+    console.error(e);
+    const errorMessage =
+      e instanceof Error ? e.message : 'An unknown error occurred';
+    if (errorMessage.includes('API key not valid')) {
+      return {
+        error:
+          'Your Google API key is not valid. Please check your .env file and ensure it is correct.',
+      };
+    }
+    return {
+      error: `An error occurred while fetching job recommendations: ${errorMessage}`,
+    };
   }
 }

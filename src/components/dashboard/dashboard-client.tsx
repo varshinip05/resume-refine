@@ -50,9 +50,9 @@ export function DashboardClient() {
 
     if (!file || file.size === 0) {
       toast({
-        variant: "destructive",
-        title: "No file selected",
-        description: "Please select a PDF resume file to analyze.",
+        variant: 'destructive',
+        title: 'No file selected',
+        description: 'Please select a PDF resume file to analyze.',
       });
       return;
     }
@@ -66,6 +66,9 @@ export function DashboardClient() {
           title: 'Analysis Failed',
           description: result.error,
         });
+      } else if (result.skills) {
+        // Store skills for the recommendations page
+        localStorage.setItem('userSkills', JSON.stringify(result.skills));
       }
     });
   };
