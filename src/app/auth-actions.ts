@@ -43,7 +43,14 @@ export async function login(prevState: any, formData: FormData) {
     };
   }
 
-  // This is a mock login. It validates the form then redirects
-  // without any database interaction.
-  redirect('/dashboard');
+  const { email, password } = validatedFields.data;
+
+  // Mock user credentials
+  if (email === 'test@example.com' && password === 'password123') {
+    redirect('/dashboard');
+  }
+
+  return {
+    message: 'Invalid email or password. Hint: Use the demo credentials provided below.',
+  };
 }

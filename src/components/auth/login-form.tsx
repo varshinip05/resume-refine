@@ -5,10 +5,9 @@ import { login } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useActionState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { Loader2, Info } from 'lucide-react';
+import { useActionState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function LoginButton() {
   const { pending } = useFormStatus();
@@ -22,19 +21,6 @@ function LoginButton() {
 
 export function LoginForm() {
   const [state, formAction] = useActionState(login, null);
-  const { toast } = useToast();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (state?.message) {
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: state.message,
-      });
-    }
-  }, [state, toast]);
-
 
   return (
     <form action={formAction} className="space-y-4">
@@ -44,11 +30,11 @@ export function LoginForm() {
           id="email"
           name="email"
           type="email"
-          placeholder="john.doe@example.com"
+          placeholder="test@example.com"
           required
           suppressHydrationWarning
         />
-        {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email}</p>}
+        {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email[0]}</p>}
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
@@ -56,13 +42,24 @@ export function LoginForm() {
             id="password" 
             name="password" 
             type="password" 
-            placeholder="********" 
+            placeholder="password123" 
             required 
             suppressHydrationWarning
         />
-        {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password}</p>}
+        {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password[0]}</p>}
       </div>
+      
+      {state?.message && <p className="text-sm font-medium text-destructive">{state.message}</p>}
+
       <LoginButton />
+
+      <Alert className="mt-4">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Demo Login</AlertTitle>
+        <AlertDescription>
+          Use email <code className="font-semibold">test@example.com</code> and password <code className="font-semibold">password123</code>.
+        </AlertDescription>
+      </Alert>
     </form>
   );
 }
