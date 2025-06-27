@@ -9,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { searchForJobsTool } from '@/ai/tools/job-search-tool';
 
 const RecommendJobsInputSchema = z.object({
   skills: z
@@ -51,6 +52,7 @@ const prompt = ai.definePrompt({
   name: 'recommendJobsPrompt',
   input: {schema: RecommendJobsInputSchema},
   output: {schema: RecommendJobsOutputSchema},
+  tools: [searchForJobsTool],
   prompt: `You are an expert career advisor and job search assistant. Your task is to recommend four diverse and suitable job roles based on the user's skills.
 
 The user has the following skills:
@@ -58,15 +60,17 @@ The user has the following skills:
 - {{{this}}}
 {{/each}}
 
-For each recommendation, provide:
+First, use the searchForJobsTool to find job listings that are relevant to the user's skills. You should make a few different queries to the tool to ensure you get a diverse set of results.
+
+After you have the job listings from the tool, review them and select the four best and most varied recommendations for the user. For each recommendation, provide:
 - A clear job title.
-- A plausible, well-known, or realistic company name.
-- A location (city or "Remote").
+- The company name.
+- The location.
 - An estimated annual salary range.
 - A match percentage (0-100) representing how good a fit the job is for the provided skills.
 - A list of the top 5 most important skills for the job.
 
-Generate exactly 4 job recommendations. Ensure the recommendations are varied and reflect potential career paths for someone with these skills.
+Generate exactly 4 job recommendations based on the tool's output.
 `,
 });
 
