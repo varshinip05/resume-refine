@@ -1,9 +1,22 @@
 'use server';
 
 import { z } from 'zod';
-import { redirect } from 'next/navigation';
 import clientPromise from '@/lib/mongodb';
 import bcrypt from 'bcryptjs';
+
+export type AuthState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+  };
+  message?: string;
+  user?: {
+    name: string;
+    email: string;
+  };
+  success?: boolean;
+} | null;
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -13,7 +26,10 @@ const signupSchema = z.object({
     .min(8, { message: 'Password must be at least 8 characters.' }),
 });
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const validatedFields = signupSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
@@ -47,22 +63,30 @@ export async function signup(prevState: any, formData: FormData) {
       email,
       password: hashedPassword,
     });
+
+    return {
+      success: true,
+      user: { name, email },
+    };
   } catch (error) {
     console.error(error);
     let errorMessage = 'An unexpected database error occurred.';
     if (error instanceof Error) {
-        if (error.message.includes('connect ECONNREFUSED') || error.message.includes('querySrv ETIMEOUT')) {
-            errorMessage = 'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
-        } else if (error.message.includes('Authentication failed')) {
-            errorMessage = 'Database authentication failed. Please check your MONGODB_URI credentials.';
-        }
+      if (
+        error.message.includes('connect ECONNREFUSED') ||
+        error.message.includes('querySrv ETIMEOUT')
+      ) {
+        errorMessage =
+          'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
+      } else if (error.message.includes('Authentication failed')) {
+        errorMessage =
+          'Database authentication failed. Please check your MONGODB_URI credentials.';
+      }
     }
     return {
-        message: errorMessage,
+      message: errorMessage,
     };
   }
-
-  redirect('/dashboard');
 }
 
 const loginSchema = z.object({
@@ -70,7 +94,10 @@ const loginSchema = z.object({
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(
+  prevState: AuthState,
+  formData: FormData
+): Promise<AuthState> {
   const validatedFields = loginSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
@@ -93,25 +120,39 @@ export async function login(prevState: any, formData: FormData) {
       return { message: 'Invalid email or password.' };
     }
 
-    const passwordsMatch = await bcrypt.compare(password, user.password as string);
+    const passwordsMatch = await bcrypt.compare(
+      password,
+      user.password as string
+    );
 
     if (!passwordsMatch) {
       return { message: 'Invalid email or password.' };
     }
+
+    return {
+      success: true,
+      user: {
+        name: user.name as string,
+        email: user.email as string,
+      },
+    };
   } catch (error) {
     console.error(error);
     let errorMessage = 'An unexpected database error occurred.';
     if (error instanceof Error) {
-        if (error.message.includes('connect ECONNREFUSED') || error.message.includes('querySrv ETIMEOUT')) {
-            errorMessage = 'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
-        } else if (error.message.includes('Authentication failed')) {
-            errorMessage = 'Database authentication failed. Please check your MONGODB_URI credentials.';
-        }
+      if (
+        error.message.includes('connect ECONNREFUSED') ||
+        error.message.includes('querySrv ETIMEOUT')
+      ) {
+        errorMessage =
+          'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
+      } else if (error.message.includes('Authentication failed')) {
+        errorMessage =
+          'Database authentication failed. Please check your MONGODB_URI credentials.';
+      }
     }
     return {
-        message: errorMessage,
+      message: errorMessage,
     };
   }
-
-  redirect('/dashboard');
 }

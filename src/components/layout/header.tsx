@@ -21,6 +21,7 @@ export function Header() {
   const handleLogout = () => {
     // Clear user-specific data from storage
     localStorage.removeItem('userSkills');
+    localStorage.removeItem('user');
     // Mock logout behavior
     router.push('/login');
   };

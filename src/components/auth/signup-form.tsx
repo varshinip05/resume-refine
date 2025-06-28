@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormStatus } from 'react-dom';
-import { signup } from '@/app/auth-actions';
+import { signup, type AuthState } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,7 @@ function SignupButton() {
 }
 
 export function SignUpForm() {
-  const [state, formAction] = useActionState(signup, null);
+  const [state, formAction] = useActionState<AuthState, FormData>(signup, null);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -32,6 +32,10 @@ export function SignUpForm() {
         title: 'Signup Failed',
         description: state.message,
       });
+    }
+    if (state?.success && state.user) {
+      localStorage.setItem('user', JSON.stringify(state.user));
+      router.push('/dashboard');
     }
   }, [state, toast, router]);
 

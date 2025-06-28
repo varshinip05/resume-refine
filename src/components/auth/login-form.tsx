@@ -1,12 +1,13 @@
 'use client';
 
 import { useFormStatus } from 'react-dom';
-import { login } from '@/app/auth-actions';
+import { login, type AuthState } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { useActionState } from 'react';
+import { useEffect, useActionState } from 'react';
+import { useRouter } from 'next/navigation';
 
 function LoginButton() {
   const { pending } = useFormStatus();
@@ -19,7 +20,15 @@ function LoginButton() {
 }
 
 export function LoginForm() {
-  const [state, formAction] = useActionState(login, null);
+  const [state, formAction] = useActionState<AuthState, FormData>(login, null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success && state.user) {
+      localStorage.setItem('user', JSON.stringify(state.user));
+      router.push('/dashboard');
+    }
+  }, [state, router]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -33,22 +42,32 @@ export function LoginForm() {
           required
           suppressHydrationWarning
         />
-        {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email[0]}</p>}
+        {state?.errors?.email && (
+          <p className="text-sm font-medium text-destructive">
+            {state.errors.email[0]}
+          </p>
+        )}
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input 
-            id="password" 
-            name="password" 
-            type="password" 
-            placeholder="********" 
-            required 
-            suppressHydrationWarning
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="********"
+          required
+          suppressHydrationWarning
         />
-        {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password[0]}</p>}
+        {state?.errors?.password && (
+          <p className="text-sm font-medium text-destructive">
+            {state.errors.password[0]}
+          </p>
+        )}
       </div>
-      
-      {state?.message && <p className="text-sm font-medium text-destructive">{state.message}</p>}
+
+      {state?.message && (
+        <p className="text-sm font-medium text-destructive">{state.message}</p>
+      )}
 
       <LoginButton />
     </form>
