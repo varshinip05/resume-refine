@@ -2,6 +2,8 @@
 
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
+import clientPromise from '@/lib/mongodb';
+import bcrypt from 'bcryptjs';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -22,8 +24,44 @@ export async function signup(prevState: any, formData: FormData) {
     };
   }
 
-  // This is a mock signup. It validates the form then redirects
-  // without any database interaction.
+  const { name, email, password } = validatedFields.data;
+
+  try {
+    const client = await clientPromise;
+    const db = client.db();
+
+    const existingUser = await db.collection('users').findOne({ email });
+
+    if (existingUser) {
+      return {
+        errors: {
+          email: ['An account with this email already exists.'],
+        },
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await db.collection('users').insertOne({
+      name,
+      email,
+      password: hashedPassword,
+    });
+  } catch (error) {
+    console.error(error);
+    let errorMessage = 'An unexpected database error occurred.';
+    if (error instanceof Error) {
+        if (error.message.includes('connect ECONNREFUSED') || error.message.includes('querySrv ETIMEOUT')) {
+            errorMessage = 'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
+        } else if (error.message.includes('Authentication failed')) {
+            errorMessage = 'Database authentication failed. Please check your MONGODB_URI credentials.';
+        }
+    }
+    return {
+        message: errorMessage,
+    };
+  }
+
   redirect('/dashboard');
 }
 
@@ -45,12 +83,35 @@ export async function login(prevState: any, formData: FormData) {
 
   const { email, password } = validatedFields.data;
 
-  // Mock user credentials
-  if (email === 'test@example.com' && password === 'password123') {
-    redirect('/dashboard');
+  try {
+    const client = await clientPromise;
+    const db = client.db();
+
+    const user = await db.collection('users').findOne({ email });
+
+    if (!user) {
+      return { message: 'Invalid email or password.' };
+    }
+
+    const passwordsMatch = await bcrypt.compare(password, user.password as string);
+
+    if (!passwordsMatch) {
+      return { message: 'Invalid email or password.' };
+    }
+  } catch (error) {
+    console.error(error);
+    let errorMessage = 'An unexpected database error occurred.';
+    if (error instanceof Error) {
+        if (error.message.includes('connect ECONNREFUSED') || error.message.includes('querySrv ETIMEOUT')) {
+            errorMessage = 'Could not connect to the database. Please ensure your IP address is whitelisted in MongoDB Atlas and try again.';
+        } else if (error.message.includes('Authentication failed')) {
+            errorMessage = 'Database authentication failed. Please check your MONGODB_URI credentials.';
+        }
+    }
+    return {
+        message: errorMessage,
+    };
   }
 
-  return {
-    message: 'Invalid email or password. Hint: Use the demo credentials provided below.',
-  };
+  redirect('/dashboard');
 }

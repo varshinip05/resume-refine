@@ -5,9 +5,8 @@ import { login } from '@/app/auth-actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Info } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useActionState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 function LoginButton() {
   const { pending } = useFormStatus();
@@ -30,7 +29,7 @@ export function LoginForm() {
           id="email"
           name="email"
           type="email"
-          placeholder="test@example.com"
+          placeholder="john.doe@example.com"
           required
           suppressHydrationWarning
         />
@@ -42,7 +41,7 @@ export function LoginForm() {
             id="password" 
             name="password" 
             type="password" 
-            placeholder="password123" 
+            placeholder="********" 
             required 
             suppressHydrationWarning
         />
@@ -52,14 +51,6 @@ export function LoginForm() {
       {state?.message && <p className="text-sm font-medium text-destructive">{state.message}</p>}
 
       <LoginButton />
-
-      <Alert className="mt-4">
-        <Info className="h-4 w-4" />
-        <AlertTitle>Demo Login</AlertTitle>
-        <AlertDescription>
-          Use email <code className="font-semibold">test@example.com</code> and password <code className="font-semibold">password123</code>.
-        </AlertDescription>
-      </Alert>
     </form>
   );
 }
