@@ -1,0 +1,50 @@
+{
+  "node": {
+    "602a0a0ffaeef2a878e4296ebf84e5de9363392468": {
+      "workers": {
+        "app/signup/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CHP%5C%5CDownloads%5C%5Cdownload%5C%5Csrc%5C%5Capp%5C%5Cauth-actions.ts%22%2C%5B%7B%22id%22%3A%22602a0a0ffaeef2a878e4296ebf84e5de9363392468%22%2C%22exportedName%22%3A%22signup%22%7D%2C%7B%22id%22%3A%226069cbda9138b5e7941db692961e38aa0ed61aed69%22%2C%22exportedName%22%3A%22login%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/signup/page": "action-browser"
+      }
+    },
+    "6069cbda9138b5e7941db692961e38aa0ed61aed69": {
+      "workers": {
+        "app/signup/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CHP%5C%5CDownloads%5C%5Cdownload%5C%5Csrc%5C%5Capp%5C%5Cauth-actions.ts%22%2C%5B%7B%22id%22%3A%22602a0a0ffaeef2a878e4296ebf84e5de9363392468%22%2C%22exportedName%22%3A%22signup%22%7D%2C%7B%22id%22%3A%226069cbda9138b5e7941db692961e38aa0ed61aed69%22%2C%22exportedName%22%3A%22login%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/signup/page": "action-browser"
+      }
+    },
+    "4084b961549e34822d4e17abd302c9b83ef47423b3": {
+      "workers": {
+        "app/dashboard/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CHP%5C%5CDownloads%5C%5Cdownload%5C%5Csrc%5C%5Capp%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%224084b961549e34822d4e17abd302c9b83ef47423b3%22%2C%22exportedName%22%3A%22getJobRecommendationsAction%22%7D%2C%7B%22id%22%3A%2240a20adf61d30343fd2f321ba734ee40f51290b580%22%2C%22exportedName%22%3A%22analyzeResumeAction%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/dashboard/page": "action-browser"
+      }
+    },
+    "40a20adf61d30343fd2f321ba734ee40f51290b580": {
+      "workers": {
+        "app/dashboard/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CHP%5C%5CDownloads%5C%5Cdownload%5C%5Csrc%5C%5Capp%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%224084b961549e34822d4e17abd302c9b83ef47423b3%22%2C%22exportedName%22%3A%22getJobRecommendationsAction%22%7D%2C%7B%22id%22%3A%2240a20adf61d30343fd2f321ba734ee40f51290b580%22%2C%22exportedName%22%3A%22analyzeResumeAction%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/dashboard/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "9iLTx7tZs3E4t3/qaffvSyoA4oZ1uSz2J0e4fZU2iUg="
+}
